@@ -1,0 +1,49 @@
+# Python virtual environment related
+venv/
+.env
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Database files
+*.sqlite3
+*.db
+
+# Flask upload files and static files directories
+instance/
+static/avatars/
+static/posts/
+
+# Flask cache or temporary files
+instance/
+tmp/
+*.log
+
+# VSCode editor settings
+.vscode/
+
+# macOS system files
+.DS_Store
+
+# Python virtual environment configuration files
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Pytest and coverage files
+htmlcov/
+.tox/
+.coverage
+.cache
+.pytest_cache/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# PyCharm IDE settings
+.idea/
+
+# Unnecessary compressed files
+*.zip
+*.tar.gz
+*.rar

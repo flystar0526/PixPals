@@ -1,0 +1,54 @@
+{% extends "toast.html" %} {% block content %}
+<header class="header bg-light py-3" style="height: 64px">
+  <div
+    class="container d-flex justify-content-between align-items-center"
+    style="height: 100%"
+  >
+    <div class="logo">
+      <a href="{{ url_for('index') }}" class="navbar-brand"
+        ><h3 style="margin: 0">PixPals</h3></a
+      >
+    </div>
+    <div class="user-menu dropdown">
+      <a
+        href="#"
+        class="dropdown-toggle"
+        data-bs-toggle="dropdown"
+        aria-expanded="false"
+      >
+        <img
+          src="{{
+            url_for('static', filename='avatars/' + (current_user.avatar or 'default-avatar.png'))
+          }}"
+          alt="User Avatar"
+          class="rounded-circle"
+          style="width: 40px; height: 40px"
+        />
+      </a>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li>
+          <a class="dropdown-item" href="{{ url_for('user.edit_profile') }}"
+            >設定</a
+          >
+        </li>
+        <li>
+          <a class="dropdown-item" href="{{ url_for('auth.logout') }}">登出</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</header>
+
+<main
+  class="main-content container py-4"
+  style="min-height: calc(100vh - 128px)"
+>
+  {% block page_content %}{% endblock %}
+</main>
+
+<footer class="footer bg-light py-3" style="height: 64px">
+  <div class="container text-center">
+    <p class="mb-0">Copyright©2024 PixPals</p>
+  </div>
+</footer>
+{% endblock %}

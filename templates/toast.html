@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ title }}</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      /* Toast notifications displayed at the top center */
+      .toast-container {
+        position: fixed;
+        top: 1rem;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1055;
+      }
+
+      /* Ensure the html and body take up the full height */
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+      }
+
+      .content {
+        width: 100%;
+        height: 100%;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Toast Position -->
+    <div class="toast-container">
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %} {% for category, message in messages %}
+      <div
+        class="toast align-items-center text-bg-{{ category }} border-0"
+        role="alert"
+        aria-live="assertive"
+        aria-atomic="true"
+        data-bs-delay="3000"
+      >
+        <div class="d-flex">
+          <div class="toast-body">{{ message }}</div>
+          <button
+            type="button"
+            class="btn-close me-2 m-auto"
+            data-bs-dismiss="toast"
+            aria-label="Close"
+          ></button>
+        </div>
+      </div>
+      {% endfor %} {% endif %} {% endwith %}
+    </div>
+
+    <!-- 頁面內容 -->
+    <div class="content">{% block content %}{% endblock %}</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // 啟用所有 Toast
+      const toastElList = [].slice.call(document.querySelectorAll(".toast"));
+      const toastList = toastElList.map(function (toastEl) {
+        return new bootstrap.Toast(toastEl).show();
+      });
+    </script>
+  </body>
+</html>
