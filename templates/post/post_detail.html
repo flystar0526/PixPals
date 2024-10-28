@@ -1,0 +1,141 @@
+{% extends "layout.html" %} {% block page_content %}
+<div class="container">
+  <div class="d-flex justify-content-center">
+    <div class="col-lg-8 col-md-10">
+      <div class="card mb-4 shadow-sm">
+        <div class="card-header d-flex align-items-center">
+          <img
+            src="{{ url_for('static', filename='avatars/' + (post.user.avatar or 'default-avatar.png')) }}"
+            class="rounded-circle me-2"
+            style="width: 50px; height: 50px; object-fit: cover"
+            alt="{{ post.user.name }}"
+          />
+          <div>
+            <h5 class="mb-0">{{ post.user.name }}</h5>
+            <small class="text-muted"
+              >{{ post.timestamp.strftime('%Y-%m-%d %H:%M') }}</small
+            >
+          </div>
+        </div>
+        <img
+          src="{{ url_for('static', filename='posts/' + post.image) }}"
+          class="w-100"
+          alt="{{ post.title }}"
+          style="max-height: 400px; object-fit: cover"
+        />
+        <div class="card-body">
+          <h4 class="card-title">{{ post.title }}</h4>
+          <p class="card-text">{{ post.content }}</p>
+        </div>
+        <div class="card-footer d-flex justify-content-around">
+          <button
+            class="btn btn-outline-primary like-btn"
+            data-post-id="{{ post.id }}"
+          >
+            <i class="bi bi-hand-thumbs-up me-1"></i>
+            <span>按讚 {{ post.likes_count }}</span>
+          </button>
+          <button
+            class="btn btn-outline-success favor-btn"
+            data-post-id="{{ post.id }}"
+          >
+            <i class="bi bi-bookmark me-1"></i>
+            <span>收藏 {{ post.favorites_count }}</span>
+          </button>
+          <a href="#comments-section" class="btn btn-outline-secondary">
+            <i class="bi bi-chat-left-text me-1"></i>
+            <span>留言 {{ post.comments_count }}</span>
+          </a>
+        </div>
+      </div>
+
+      <div id="comments-section" class="mt-4">
+        <h5>留言區</h5>
+        <ul class="list-group mb-4">
+          {% for comment in post.comments %}
+          <li class="list-group-item">
+            <div class="d-flex align-items-start">
+              <img
+                src="{{ url_for('static', filename='avatars/' + (comment.user.avatar or 'default-avatar.png')) }}"
+                class="rounded-circle me-2"
+                style="width: 40px; height: 40px; object-fit: cover"
+                alt="{{ comment.user.name }}"
+              />
+              <div>
+                <strong>{{ comment.user.name }}</strong>
+                <small class="text-muted d-block"
+                  >{{ comment.timestamp.strftime('%Y-%m-%d %H:%M') }}</small
+                >
+                <p class="mb-0">{{ comment.content }}</p>
+              </div>
+            </div>
+          </li>
+          {% else %}
+          <li class="list-group-item text-center text-muted">目前尚無留言</li>
+          {% endfor %}
+        </ul>
+
+        <form
+          method="POST"
+          action="{{ url_for('post.post_detail', post_id=post.id) }}"
+        >
+          {{ form.csrf_token }}
+          <div class="d-flex align-items-start mb-3">
+            <img
+              src="{{ url_for('static', filename='avatars/' + (current_user.avatar or 'default-avatar.png')) }}"
+              class="rounded-circle me-2"
+              style="width: 40px; height: 40px; object-fit: cover"
+              alt="Your Avatar"
+            />
+            <div class="w-100">
+              {{ form.content(class_="form-control", rows=2,
+              placeholder="發表您的留言...") }} {% if form.content.errors %}
+              <div class="text-danger mt-1">{{ form.content.errors[0] }}</div>
+              {% endif %}
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary w-100">發表留言</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll(".like-btn").forEach((button) => {
+    button.addEventListener("click", function () {
+      const postId = this.dataset.postId;
+      fetch(`/post/like/${postId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          this.querySelector("span").textContent = `按讚 ${data.likes_count}`;
+        })
+        .catch((error) => console.error("Error:", error));
+    });
+  });
+
+  document.querySelectorAll(".favor-btn").forEach((button) => {
+    button.addEventListener("click", function () {
+      const postId = this.dataset.postId;
+      fetch(`/post/favor/${postId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          this.querySelector(
+            "span"
+          ).textContent = `收藏 ${data.favorites_count}`;
+        })
+        .catch((error) => console.error("Error:", error));
+    });
+  });
+</script>
+{% endblock %}

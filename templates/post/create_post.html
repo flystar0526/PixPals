@@ -1,0 +1,40 @@
+{% extends "layout.html" %} {% block page_content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-header text-center">
+        <h3 class="mb-0">建立貼文</h3>
+      </div>
+      <div class="card-body">
+        <form method="POST" enctype="multipart/form-data">
+          {{ form.csrf_token }}
+
+          <div class="mb-3">
+            {{ form.title.label(class_="form-label") }} {{
+            form.title(class_="form-control") }} {% if form.title.errors %}
+            <div class="text-danger mt-1">{{ form.title.errors[0] }}</div>
+            {% endif %}
+          </div>
+
+          <div class="mb-3">
+            {{ form.content.label(class_="form-label") }} {{
+            form.content(class_="form-control", rows=5) }} {% if
+            form.content.errors %}
+            <div class="text-danger mt-1">{{ form.content.errors[0] }}</div>
+            {% endif %}
+          </div>
+
+          <div class="mb-3">
+            {{ form.image.label(class_="form-label") }} {{
+            form.image(class_="form-control") }} {% if form.image.errors %}
+            <div class="text-danger mt-1">{{ form.image.errors[0] }}</div>
+            {% endif %}
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100">發布</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends "layout.html" %} {% block page_content %}
+<div class="container">
+  <div class="d-flex align-items-center mb-4">
+    <img
+      src="{{ url_for('static', filename='avatars/' + (user.avatar or 'default-avatar.png')) }}"
+      class="rounded-circle me-3"
+      style="width: 100px; height: 100px; object-fit: cover"
+      alt="{{ user.name }}"
+    />
+    <div>
+      <h3 class="mb-0">{{ user.name }}</h3>
+      <small class="text-muted">Email: {{ user.email }}</small>
+    </div>
+  </div>
+
+  <hr />
+
+  <div class="mt-4">
+    <h5>我的貼文</h5>
+    <div class="row">
+      {% for post in posts %}
+      <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+        <div class="card">
+          <img
+            src="{{ url_for('static', filename='posts/' + post.image) }}"
+            class="card-img-top"
+            alt="{{ post.title }}"
+            style="height: 200px; object-fit: cover; cursor: pointer"
+            onclick="window.location.href='{{ url_for('post.post_detail', post_id=post.id) }}'"
+          />
+          <div class="card-body">
+            <h6 class="card-title">{{ post.title }}</h6>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <h5>按讚的貼文</h5>
+    <div class="row">
+      {% for post in liked_posts %}
+      <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+        <div class="card">
+          <img
+            src="{{ url_for('static', filename='posts/' + post.image) }}"
+            class="card-img-top"
+            alt="{{ post.title }}"
+            style="height: 200px; object-fit: cover; cursor: pointer"
+            onclick="window.location.href='{{ url_for('post.post_detail', post_id=post.id) }}'"
+          />
+          <div class="card-body">
+            <h6 class="card-title">{{ post.title }}</h6>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <h5>收藏的貼文</h5>
+    <div class="row">
+      {% for post in favorited_posts %}
+      <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+        <div class="card">
+          <img
+            src="{{ url_for('static', filename='posts/' + post.image) }}"
+            class="card-img-top"
+            alt="{{ post.title }}"
+            style="height: 200px; object-fit: cover; cursor: pointer"
+            onclick="window.location.href='{{ url_for('post.post_detail', post_id=post.id) }}'"
+          />
+          <div class="card-body">
+            <h6 class="card-title">{{ post.title }}</h6>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

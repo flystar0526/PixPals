@@ -55,7 +55,9 @@
             />
             <img
               id="avatar-preview"
-              src="/static/default-avatar.png"
+              src="{{
+                url_for('static', filename='avatars/' + (current_user.avatar or 'default-avatar.png'))
+              }}"
               class="img-thumbnail mt-2"
               width="150"
               alt="頭像預覽"

@@ -2,7 +2,7 @@ import os
 from flask import render_template, redirect, url_for, flash, request, current_app, session
 from flask_login import current_user, login_required
 from werkzeug.utils import secure_filename
-from models import db
+from models import db, Post, PostLike, PostFavor
 from user import user_bp
 from utils.forms import EditProfileForm
 
@@ -45,3 +45,25 @@ def edit_profile():
         return redirect(previous_url)
 
     return render_template('user/edit_profile.html', form=form)
+
+@user_bp.route('/profile')
+@login_required
+def profile():
+    # 使用者的發布貼文
+    posts = Post.query.filter_by(user_id=current_user.id).all()
+
+    # 使用者按讚過的貼文
+    liked_posts = Post.query.join(PostLike, Post.id == PostLike.post_id) \
+                            .filter(PostLike.user_id == current_user.id).all()
+
+    # 使用者收藏過的貼文
+    favorited_posts = Post.query.join(PostFavor, Post.id == PostFavor.post_id) \
+                                .filter(PostFavor.user_id == current_user.id).all()
+
+    return render_template(
+        'user/profile.html', 
+        user=current_user, 
+        posts=posts, 
+        liked_posts=liked_posts, 
+        favorited_posts=favorited_posts
+    )

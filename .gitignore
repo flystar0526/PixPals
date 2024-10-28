@@ -12,8 +12,10 @@ __pycache__/
 
 # Flask upload files and static files directories
 instance/
-static/avatars/
-static/posts/
+static/avatars/*
+!static/avatars/.gitkeep
+static/posts/*
+!static/posts/.gitkeep
 
 # Flask cache or temporary files
 instance/

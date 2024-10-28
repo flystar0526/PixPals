@@ -1,3 +1,87 @@
 {% extends "layout.html" %} {% block page_content %}
-<h1>Welcome to PixPals</h1>
+<div class="container">
+  <h1 class="text-center mb-5">所有貼文</h1>
+  <div class="row">
+    {% for post in posts %}
+    <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+      <div class="card h-100 shadow-sm">
+        <div class="card-header d-flex align-items-center">
+          <img
+            src="{{ url_for('static', filename='avatars/' + (post.user.avatar or 'default-avatar.png')) }}"
+            class="rounded-circle me-2"
+            style="width: 40px; height: 40px; object-fit: cover"
+            alt="{{ post.user.name }}"
+          />
+          <div>
+            <h6 class="mb-0">{{ post.user.name }}</h6>
+            <small class="text-muted"
+              >{{ post.timestamp.strftime('%Y-%m-%d %H:%M') }}</small
+            >
+          </div>
+        </div>
+        <img
+          src="{{ url_for('static', filename='posts/' + post.image) }}"
+          class="card-img-top"
+          alt="{{ post.title }}"
+          style="max-height: 200px; object-fit: cover; cursor: pointer"
+          onclick="window.location.href='{{ url_for('post.post_detail', post_id=post.id) }}'"
+        />
+        <div class="card-body">
+          <h5 class="card-title">{{ post.title }}</h5>
+          <p class="card-text text-truncate">{{ post.content }}</p>
+        </div>
+        <div class="card-footer d-flex justify-content-around">
+          <button
+            class="btn btn-outline-primary like-btn"
+            data-post-id="{{ post.id }}"
+          >
+            <i class="bi bi-hand-thumbs-up me-1"></i>
+            <span>按讚 {{ post.likes_count }}</span>
+          </button>
+          <button
+            class="btn btn-outline-success favor-btn"
+            data-post-id="{{ post.id }}"
+          >
+            <i class="bi bi-bookmark me-1"></i>
+            <span>收藏 {{ post.favorites_count }}</span>
+          </button>
+          <a
+            href="{{ url_for('post.post_detail', post_id=post.id) }}"
+            class="btn btn-outline-secondary"
+          >
+            <i class="bi bi-chat-left-text me-1"></i>
+            <span>留言 {{ post.comments_count }}</span>
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll(".like-btn").forEach((button) => {
+    button.addEventListener("click", function () {
+      const postId = this.dataset.postId;
+      fetch(`/post/like/${postId}`, { method: "POST" })
+        .then((response) => response.json())
+        .then((data) => {
+          this.querySelector("span").textContent = `按讚 ${data.likes_count}`;
+        });
+    });
+  });
+
+  document.querySelectorAll(".favor-btn").forEach((button) => {
+    button.addEventListener("click", function () {
+      const postId = this.dataset.postId;
+      fetch(`/post/favor/${postId}`, { method: "POST" })
+        .then((response) => response.json())
+        .then((data) => {
+          this.querySelector(
+            "span"
+          ).textContent = `收藏 ${data.favorites_count}`;
+        });
+    });
+  });
+</script>
 {% endblock %}
