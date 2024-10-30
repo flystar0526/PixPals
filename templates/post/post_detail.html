@@ -18,7 +18,7 @@
           </div>
         </div>
         <img
-          src="{{ url_for('static', filename='posts/' + post.image) }}"
+          src="{{ url_for('static', filename='posts/' + (post.image or 'default-post.png')) }}"
           class="w-100"
           alt="{{ post.title }}"
           style="max-height: 400px; object-fit: cover"

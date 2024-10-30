@@ -25,7 +25,7 @@ class User(UserMixin, db.Model):
 
 class Post(db.Model):
     __tablename__ = 'posts'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String, primary_key=True, default=generate_uuid)
     title = db.Column(db.String(50), nullable=False)
     content = db.Column(db.String(500), nullable=True)
     image = db.Column(db.String(100), nullable=True)
@@ -37,22 +37,22 @@ class Post(db.Model):
 
     @property
     def likes_count(self):
-        """計算貼文的按讚數量"""
+        """Calculate the number of likes for the post"""
         return PostLike.query.filter_by(post_id=self.id).count()
 
     @property
     def favorites_count(self):
-        """計算貼文的收藏數量"""
+        """Calculate the number of favorites for the post"""
         return PostFavor.query.filter_by(post_id=self.id).count()
 
     @property
     def comments_count(self):
-        """計算留言數量"""
+        """Calculate the number of comments"""
         return self.comments.count()
 
 class Comment(db.Model):
     __tablename__ = 'comments'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String, primary_key=True, default=generate_uuid)
     content = db.Column(db.String(500), nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     post_id = db.Column(db.Integer, db.ForeignKey('posts.id'), nullable=False)

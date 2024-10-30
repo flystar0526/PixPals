@@ -21,7 +21,7 @@ login_manager.login_message_category = 'warning'
 def load_user(user_id):
     return User.query.get(user_id)
 
-# 註冊 Blueprint
+# Register Blueprints
 app.register_blueprint(auth_bp, url_prefix='/auth')
 app.register_blueprint(user_bp, url_prefix='/user')
 app.register_blueprint(post_bp, url_prefix='/post')
@@ -29,7 +29,7 @@ app.register_blueprint(post_bp, url_prefix='/post')
 @app.route('/')
 @login_required
 def index():
-    # 取得所有貼文
+    # Retrieve all posts
     posts = Post.query.order_by(Post.id.desc()).all()
     return render_template('index.html', user=current_user, posts=posts)
 

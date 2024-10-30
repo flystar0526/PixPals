@@ -1,4 +1,5 @@
 import os
+import uuid
 from flask import render_template, redirect, url_for, flash, request, current_app, jsonify
 from flask_login import current_user, login_required
 from werkzeug.utils import secure_filename
@@ -13,15 +14,22 @@ UPLOAD_FOLDER = 'static/posts'
 def create_post():
     form = PostForm()
     if form.validate_on_submit():
-        # 上傳圖片處理
+        # Image upload handling
         image_filename = None
         if form.image.data:
             image_file = form.image.data
-            image_filename = secure_filename(image_file.filename)
-            image_path = os.path.join(current_app.root_path, UPLOAD_FOLDER, image_filename)
-            image_file.save(image_path)
+            original_filename = secure_filename(image_file.filename)
+            # Use UUID to generate a unique file name, retaining the extension
+            unique_filename = f"{uuid.uuid4().hex}{os.path.splitext(original_filename)[1]}"
+            image_path = os.path.join(current_app.root_path, UPLOAD_FOLDER, unique_filename)
 
-        # 建立貼文
+            # Ensure the upload folder exists
+            os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+            # Save the image
+            image_file.save(image_path)
+            image_filename = unique_filename
+
+        # Create post
         post = Post(
             title=form.title.data,
             content=form.content.data,
@@ -36,7 +44,7 @@ def create_post():
 
     return render_template('post/create_post.html', form=form)
 
-@post_bp.route('/<int:post_id>', methods=['GET', 'POST'])
+@post_bp.route('/<post_id>', methods=['GET', 'POST'])
 @login_required
 def post_detail(post_id):
     post = Post.query.get_or_404(post_id)
@@ -55,33 +63,33 @@ def post_detail(post_id):
 
     return render_template('post/post_detail.html', post=post, form=form)
 
-@post_bp.route('/like/<int:post_id>', methods=['POST'])
+@post_bp.route('/like/<post_id>', methods=['POST'])
 @login_required
 def like_post(post_id):
     like = PostLike.query.filter_by(user_id=current_user.id, post_id=post_id).first()
     if like:
-        # 如果已按讚則取消按讚
+        # If already liked, then unlike
         db.session.delete(like)
         db.session.commit()
         return jsonify({'status': 'unliked', 'likes_count': Post.query.get(post_id).likes_count})
     else:
-        # 新增按讚
+        # Add like
         new_like = PostLike(user_id=current_user.id, post_id=post_id)
         db.session.add(new_like)
         db.session.commit()
         return jsonify({'status': 'liked', 'likes_count': Post.query.get(post_id).likes_count})
 
-@post_bp.route('/favor/<int:post_id>', methods=['POST'])
+@post_bp.route('/favor/<post_id>', methods=['POST'])
 @login_required
 def favor_post(post_id):
     favor = PostFavor.query.filter_by(user_id=current_user.id, post_id=post_id).first()
     if favor:
-        # 如果已收藏則取消收藏
+        # If already favorited, then unfavorite
         db.session.delete(favor)
         db.session.commit()
         return jsonify({'status': 'unfavorited', 'favorites_count': Post.query.get(post_id).favorites_count})
     else:
-        # 新增收藏
+        # Add to favorites
         new_favor = PostFavor(user_id=current_user.id, post_id=post_id)
         db.session.add(new_favor)
         db.session.commit()

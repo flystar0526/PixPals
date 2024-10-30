@@ -14,8 +14,10 @@ __pycache__/
 instance/
 static/avatars/*
 !static/avatars/.gitkeep
+!static/avatars/default-avatar.png
 static/posts/*
 !static/posts/.gitkeep
+!static/posts/default-post.png
 
 # Flask cache or temporary files
 instance/

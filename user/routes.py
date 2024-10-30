@@ -1,4 +1,5 @@
 import os
+import uuid
 from flask import render_template, redirect, url_for, flash, request, current_app, session
 from flask_login import current_user, login_required
 from werkzeug.utils import secure_filename
@@ -13,34 +14,48 @@ UPLOAD_FOLDER = 'static/avatars'
 def edit_profile():
     form = EditProfileForm()
 
-    # 保存上一頁的 URL 進入 session
+    # Save the previous page URL into the session
     if request.method == 'GET':
         session['previous_url'] = request.referrer or url_for('index')
 
-        # 預設填充表單資料
+        # Pre-fill the form with default data
         form.email.data = current_user.email
         form.name.data = current_user.name
 
     if form.validate_on_submit():
-        # 更新用戶資料
+        # Update user information
         current_user.name = form.name.data
 
         if form.password.data:
             current_user.set_password(form.password.data)
 
-        # 處理頭像上傳
+        # Handle avatar upload
         if form.avatar.data:
             avatar_file = form.avatar.data
-            filename = secure_filename(avatar_file.filename)
-            avatar_path = os.path.join(current_app.root_path, UPLOAD_FOLDER, filename)
-            avatar_file.save(avatar_path)
-            current_user.avatar = filename
+            original_filename = secure_filename(avatar_file.filename)
+            # Generate a unique filename using UUID and retain the file extension
+            unique_filename = f"{uuid.uuid4().hex}{os.path.splitext(original_filename)[1]}"
+            avatar_path = os.path.join(current_app.root_path, UPLOAD_FOLDER, unique_filename)
 
-        # 提交變更
+            # Ensure the upload folder exists
+            os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+            # Save the new avatar
+            avatar_file.save(avatar_path)
+
+            # Delete the old avatar (if not the default avatar)
+            if current_user.avatar and current_user.avatar != 'default-avatar.png':
+                old_avatar_path = os.path.join(current_app.root_path, UPLOAD_FOLDER, current_user.avatar)
+                if os.path.exists(old_avatar_path):
+                    os.remove(old_avatar_path)
+
+            # Update the avatar name in the database
+            current_user.avatar = unique_filename
+
+        # Commit the changes
         db.session.commit()
         flash('個人資料已更新', 'success')
 
-        # 從 session 中取出上一頁的 URL 並跳轉
+        # Retrieve the previous page URL from the session and redirect
         previous_url = session.get('previous_url', url_for('index'))
         return redirect(previous_url)
 
@@ -49,14 +64,14 @@ def edit_profile():
 @user_bp.route('/profile')
 @login_required
 def profile():
-    # 使用者的發布貼文
+    # User's published posts
     posts = Post.query.filter_by(user_id=current_user.id).all()
 
-    # 使用者按讚過的貼文
+    # User's liked posts
     liked_posts = Post.query.join(PostLike, Post.id == PostLike.post_id) \
                             .filter(PostLike.user_id == current_user.id).all()
 
-    # 使用者收藏過的貼文
+    # User's favorited posts
     favorited_posts = Post.query.join(PostFavor, Post.id == PostFavor.post_id) \
                                 .filter(PostFavor.user_id == current_user.id).all()
 
