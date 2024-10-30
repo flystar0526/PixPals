@@ -22,7 +22,7 @@
       <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
         <div class="card">
           <img
-            src="{{ url_for('static', filename='posts/' + post.image) }}"
+            src="{{ url_for('static', filename='posts/' + (post.image or 'default-post.png')) }}"
             class="card-img-top"
             alt="{{ post.title }}"
             style="height: 200px; object-fit: cover; cursor: pointer"
@@ -42,7 +42,7 @@
       <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
         <div class="card">
           <img
-            src="{{ url_for('static', filename='posts/' + post.image) }}"
+            src="{{ url_for('static', filename='posts/' + (post.image or 'default-post.png')) }}"
             class="card-img-top"
             alt="{{ post.title }}"
             style="height: 200px; object-fit: cover; cursor: pointer"
@@ -62,7 +62,7 @@
       <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
         <div class="card">
           <img
-            src="{{ url_for('static', filename='posts/' + post.image) }}"
+            src="{{ url_for('static', filename='posts/' + (post.image or 'default-post.png')) }}"
             class="card-img-top"
             alt="{{ post.title }}"
             style="height: 200px; object-fit: cover; cursor: pointer"
