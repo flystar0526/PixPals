@@ -10,8 +10,6 @@ Flask-WTF==1.2.1
 greenlet==3.1.1
 Jinja2==3.1.4
 MarkupSafe==2.1.5
-numpy==2.1.2
-pandas==2.2.3
 pillow==11.0.0
 python-dateutil==2.9.0.post0
 pytz==2024.2
